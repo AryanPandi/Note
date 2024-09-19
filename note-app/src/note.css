@@ -1,0 +1,93 @@
+body{
+    margin: 30px;
+    background-color: rgb(34, 158, 177);
+}
+.app-container{
+    grid-template-columns: 1fr;
+}
+
+@media (min-width:700px){
+    .app-container{
+        display: grid;
+        grid-template-columns: 230px 1fr;
+        gap:30px;
+    }
+
+}
+.note-display{
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(250px,1fr)
+    );
+    grid-auto-rows:  minmax(250px,auto);
+    gap:20px;
+}
+
+.note-item{
+    display: flex;
+    flex-direction: column;
+    border: 2px solid rgb(38, 175, 200);  
+    border-radius: 5px;
+    background-color: aliceblue;
+    box-shadow: 0px 0px 0px rgb(34, 158, 177);
+    cursor: pointer; 
+    padding: 10px;
+}
+
+.note-header{
+    display: flex;
+    justify-content: flex-end;
+}
+.note-header button{
+    font-size: 15px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    max-width: fit-content;
+}
+
+h3{
+    margin: 0;
+}
+
+.note-form{
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+}
+textarea,input{
+    border-radius: 5px;
+    border: 2px solid rgb(38, 175, 200); 
+    padding: 10px;
+    font-size: 15px;
+}
+.note-form button{
+    border-radius: 5px;
+    background-color:rgb(60, 227, 34);
+    border: none ;
+    padding: 10px;
+    font-size: 15px;
+    color: aliceblue;
+}
+.note-form button:hover{
+    background-color: rgb(23, 112, 9);
+    cursor: pointer;
+}
+.note-form .edit-btn{
+    display: flex;
+    justify-content: space-around   ;
+    gap: 5px;
+}
+.note-form .edit-btn button{
+    flex: 1;
+}
+.note-form .edit-btn button:last-of-type{
+    background-color: rgb(254, 18, 18);
+    color: bisque;
+}
+
+.note-form .edit-btn button:last-of-type:hover{
+    background-color: rgb(87, 3, 3);
+    color: bisque;
+}
