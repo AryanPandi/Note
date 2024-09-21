@@ -23,7 +23,6 @@ mongoose.connect(process.env.DB_URI)
 app.get('/check-auth', (req, res) => {
     const token = req.cookies.token; // Access the token from the cookie
     if (!token) {
-        console.log("No token");
       return res.json({ isAuthenticated: false });
     }
     jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
@@ -44,7 +43,6 @@ app.post('/login',async(req,res)=>{
     try{
         const match= await bcrypt.compare(password,user.password);
         const token=jwt.sign({ _id: user._id },process.env.TOKEN_SECRET,{expiresIn:'10hr'});
-        console.log("Token: "+token);
         if(match){
             res.cookie('token',token,{
                 httpOnly:true,
