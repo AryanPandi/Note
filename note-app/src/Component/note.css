@@ -91,3 +91,31 @@ textarea,input{
   background-color: rgb(87, 3, 3);
   color: bisque;
 }
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgb(34, 158, 177);
+  padding: 15px;
+  /* border-bottom: 2px solid rgb(38, 175, 200); */
+}
+
+.user-info {
+  font-size: 18px;
+  color: aliceblue;
+}
+
+.logout-btn {
+  font-size: 15px;
+  background-color: rgb(254, 18, 18);
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  color: aliceblue;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: rgb(87, 3, 3);
+}

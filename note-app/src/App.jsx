@@ -4,17 +4,20 @@ import MainComponent from './Component/Main/MainComponent';
 import LoginComponent from './Component/User/LoginComponent';
 import RegisterComponent from './Component/User/RegisterComponent';
 import ProtectedRoute from './Component/ProtectedRoute';
+import { useState } from 'react';
 
 
 
 function App() {
 
+  const [currUser,setCurrUser]=useState(null);
+
   return (
     <Router>
       <Routes>
-        <Route path="/register" element={< RegisterComponent/>} />
-        <Route path="/login" element={<LoginComponent/>} />
-        <Route path="/main" element={<ProtectedRoute element={<MainComponent/>}/>} />
+        <Route path="/" element={< RegisterComponent/>} />
+        <Route path="/login" element={<LoginComponent setCurrUser={setCurrUser}/>} />
+        <Route path="/main" element={<ProtectedRoute element={<MainComponent currUser={currUser} setCurrUser={setCurrUser} />}/>} />
       </Routes>
     </Router>
   );

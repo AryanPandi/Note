@@ -4,10 +4,15 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const NoteApp = require('./model/noteModel');
 const NoteUser=require('./model/noteUser');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const cookieParser = require('cookie-parser');
+
+
 const app = express();
-app.use(cors());
+app.use(cors({origin:'http://localhost:3000',credentials: true}));
 app.use(express.json());
+app.use(cookieParser());
 
 const PORT=process.env.PORT|| 3000;
 
@@ -15,22 +20,46 @@ mongoose.connect(process.env.DB_URI)
 .then(() => console.log('Database connected'))
 .catch(err => console.error('Database connection error:', err));
 
+app.get('/check-auth', (req, res) => {
+    const token = req.cookies.token; // Access the token from the cookie
+    if (!token) {
+        console.log("No token");
+      return res.json({ isAuthenticated: false });
+    }
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+        return res.json({ isAuthenticated: false });
+      }
+      res.json({ isAuthenticated: true });
+    });
+  });
+
+
 app.post('/login',async(req,res)=>{
     const {email,password}=req.body;
-    const user = await NoteApp.findOne({ email:email });
+    const user = await NoteUser.findOne({email});
+    if (!user) {
+        return res.status(400).json({ error: 'Email or Password is wrong.', success: false });
+    }
     try{
         const match= await bcrypt.compare(password,user.password);
-        const token=jwt.sign(JSON.stringify(user),process.env.TOKEN_SECRET);
+        const token=jwt.sign({ _id: user._id },process.env.TOKEN_SECRET,{expiresIn:'10hr'});
+        console.log("Token: "+token);
         if(match){
-            res.cookie.token=token;
-            res.status(200).send('Successful Login');
+            res.cookie('token',token,{
+                httpOnly:true,
+                secure:false,
+                maxAge:3600000000000
+            });
+            user.password=undefined;
+            res.status(200).json({message:'Successfully Logged Inn.',success:true, user:user });
         }
         else{
-            res.status(401).send('Unsuccessful Login');
+            res.status(400).json({error: 'Email or Password is wrong.',success:false});
         }
-
     }catch(err){
-        console.log(e);
+        console.log(err);
+        res.status(500).json({ error: 'An error occurred during registration',success:false });
     };
     
 });
@@ -38,45 +67,52 @@ app.post('/login',async(req,res)=>{
 app.post('/register',async(req,res)=>{
     const {username,email,password}= req.body;
     try{
-        const hashedPassword= await bcrypt.hash(password,10);
+        const salt= await bcrypt.genSalt(10);
+        const hashedPassword= await bcrypt.hash(password,salt);
         const newUser= new NoteUser({
             username:username,
             password:hashedPassword,
             email:email,
         });
         const savedUser= await newUser.save();
-        res.status(201).json({ message: 'Successfully Registered' });
+        res.status(200).json({ message: 'Successfully Registered',success:true });
     } catch (e) {
         console.log(e);
-        res.status(500).json({ error: 'An error occurred during registration' });
+        res.status(500).json({ error: 'An error occurred during registration',success:false });
     }
 });
 
 app.get('/getNote', async (req, res) => {
-    const allNotes = await NoteApp.find();
+    const user= req.query.currUser;
+    const allNotes = await NoteApp.find({user:user._id});
+
     res.json(allNotes);
 });
 
 app.post('/addNote',async(req,res)=>{
     const newNote= new NoteApp({
         title:req.body.title,
-        content:req.body.content
+        content:req.body.content,
+        user:req.body.currUser
     });
+
     res.json(await newNote.save());
 });
 
 app.put('/updateNote/:id',async(req,res)=>{
-    const findNoteAndUpdate= await NoteApp.findByIdAndUpdate({_id:req.params.id},req.body,{new:true});
+    const {selectNote,currUser}=req.body;
+    const findNoteAndUpdate= await NoteApp.findByIdAndUpdate({_id:req.params.id,user:currUser._id},selectNote,{new:true});
 
     res.json(findNoteAndUpdate);
 });
 
 app.delete('/deleteNote/:id',async(req,res)=>{
-    const deleteNote= await NoteApp.findByIdAndDelete(req.params.id);
+    const {currUser}=req.body; 
+    const deleteNote= await NoteApp.findByIdAndDelete({_id:req.params.id,user:currUser._id});
     res.json(deleteNote);
 });
 
-
+ 
 
 
 
