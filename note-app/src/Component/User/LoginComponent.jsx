@@ -1,11 +1,11 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 import axios from 'axios';
 
-const LoginComponent = ({setCurrUser}) => {
-    const navigate= useNavigate();
+const LoginComponent = ({ setCurrUser }) => {
+    const navigate = useNavigate();
     const [loginUser, setLoginUser] = useState({
         userEmail: '',
         userPassword: ''
@@ -14,16 +14,16 @@ const LoginComponent = ({setCurrUser}) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost:3001/check-auth')
-          .then(res => {
-            if (res.data.isAuthenticated) {
-              navigate('/main'); // Redirect if user is already logged in
-            }
-          })
-          .catch(err => {
-            console.error('Error checking authentication', err);
-          });
-      }, [navigate]);
+        axios.get('https://localhost:3001/check-auth')
+            .then(res => {
+                if (res.data.isAuthenticated) {
+                    navigate('/main'); // Redirect if user is already logged in
+                }
+            })
+            .catch(err => {
+                console.error('Error checking authentication', err);
+            });
+    }, [navigate]);
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -33,8 +33,8 @@ const LoginComponent = ({setCurrUser}) => {
                 password: loginUser.userPassword,
             };
 
-            axios.post('http://localhost:3001/login', newLoginUser,{
-                withCredentials: true 
+            axios.post('http://localhost:3001/login', newLoginUser, {
+                withCredentials: true
             })
                 .then(res => {
                     if (res.data.success) {
@@ -49,7 +49,7 @@ const LoginComponent = ({setCurrUser}) => {
                     }
                 })
                 .catch(e => {
-                    // setError(e.response.data.error);
+                    setError(e.response.data.error);
                     console.log(e.response ? e.response.data.error : e.message);
                 })
         }
@@ -70,7 +70,10 @@ const LoginComponent = ({setCurrUser}) => {
                 <input type="email" placeholder="Email" onChange={(e) => setLoginUser({ ...loginUser, userEmail: e.target.value })} required />
                 <input type="password" placeholder="Password" onChange={(e) => setLoginUser({ ...loginUser, userPassword: e.target.value })} required />
                 <button type="submit">Login</button>
-                <Link to='/'>Register</Link>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Link to='/'>Register</Link>
+                    <Link to='/forget-password'>Forget Password?</Link>
+                </div>
             </form>
         </div>
     )

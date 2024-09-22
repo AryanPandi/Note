@@ -5,7 +5,7 @@ import LoginComponent from './Component/User/LoginComponent';
 import RegisterComponent from './Component/User/RegisterComponent';
 import ProtectedRoute from './Component/ProtectedRoute';
 import { useState } from 'react';
-
+import ForgetPasswordComponent from './Component/User/ForgetPasswordComponent';
 
 
 function App() {
@@ -17,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={< RegisterComponent/>} />
         <Route path="/login" element={<LoginComponent setCurrUser={setCurrUser}/>} />
+        <Route path='/forget-password' element={ <ForgetPasswordComponent />} />
         <Route path="/main" element={<ProtectedRoute element={<MainComponent currUser={currUser} setCurrUser={setCurrUser} />}/>} />
       </Routes>
     </Router>
