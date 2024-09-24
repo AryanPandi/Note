@@ -8,7 +8,11 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
 var nodemailer = require('nodemailer');
+const https = require('https');
 
+const agent = new https.Agent({
+  rejectUnauthorized: false,
+});
 const app = express();
 app.use(cors({origin:'http://localhost:3000',credentials: true}));
 app.use(express.json());
@@ -33,30 +37,36 @@ app.post('/forgetpassword', async(req,res)=>{
         const secret= process.env.TOKEN_SECRET+user.password;
         const token= jwt.sign({email:user.email,_id:user._id},secret,{expiresIn:'5m'});
         const link=`http://localhost:3001/reset-password/${user._id}/${token}`;
-        console.log("Link:"+link);
-        var transporter = nodemailer.createTransport({
-            service: 'gmail',
+          const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false,
+            requireTLS: true,
             auth: {
-              user: 'aryanpandii@gmail.com',
-              pass: ''
-            }
-          });
+                user: process.env.APP_EMAIL,
+                pass: process.env.APP_PASS,
+            },
+            tls: {
+                rejectUnauthorized: false, // This allows self-signed certificates
+            },
+        });
           
           var mailOptions = {
-            from: 'youremail@gmail.com',
-            to: 'myfriend@yahoo.com',
-            subject: 'Sending Email using Node.js',
+            from: process.env.APP_EMAIL,
+            to: email,
+            subject: 'Sending Email using Node.js for password reset.',
             text: 'Please fine your link for rest password '+link,
           };
           
-          transporter.sendMail(mailOptions, function(error, info){
+          transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-              console.log(error);
+                console.log(error);
+                return res.status(500).json({ message: "Failed to send email" }); // Send error response and return early
             } else {
-              console.log('Email sent: ' + info.response);
+                console.log('Email sent: ' + info.response);
+                return res.status(200).json({ message: "Email sent successfully" }); // Send success response
             }
-          });
-        res.json({message:"Verified"});
+        });
     }catch(e){
         console.log(e);
         res.status(500).json({ error: 'An error occurred during registration',success:false });
@@ -83,7 +93,6 @@ app.post('/reset-password/:id/:token',async(req,res)=>{
     const {id,token}= req.params;
     const {password,confirmPassword} = req.body;
     const oldUser= await NoteUser.findOne({_id:id});
-    console.log(password,confirmPassword,id,token);
     if (!oldUser) {
         return res.status(400).json({ error: `User doesn't exsist.`, success: false });
     }
@@ -93,7 +102,7 @@ app.post('/reset-password/:id/:token',async(req,res)=>{
         const salt= await bcrypt.genSalt(10);
         const encryptpassword= await bcrypt.hash(password,salt);
         const updatedUser= await NoteUser.findByIdAndUpdate({_id:id},{$set:{password:encryptpassword}});
-        res.json({ message: "Password updated successfully.", user: updatedUser });
+        // res.json({ message: "Password updated successfully.", user: updatedUser });
         res.render("index",{email: verify.email,status:"verified"});
     }catch(e){
         return res.status(401).json({ error: 'Token is invalid or has expired.' });
