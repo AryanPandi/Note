@@ -162,6 +162,36 @@ app.post('/register',async(req,res)=>{
             email:email,
         });
         const savedUser= await newUser.save();
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false,
+            requireTLS: true,
+            auth: {
+                user: process.env.APP_EMAIL,
+                pass: process.env.APP_PASS,
+            },
+            tls: {
+                rejectUnauthorized: false, // This allows self-signed certificates
+            },
+        });
+          
+          var mailOptions = {
+            from: process.env.APP_EMAIL,
+            to: email,
+            subject: 'Sending Email using Node.js for registeration in Notesapp.',
+            text: 'Thank you for your registration in the Notes App.'
+          };
+          
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ message: "Failed to send email" }); // Send error response and return early
+            } else {
+                console.log('Email sent: ' + info.response);
+                return res.status(200).json({ message: "Email sent successfully" }); // Send success response
+            }
+        });
         res.status(200).json({ message: 'Successfully Registered',success:true });
     } catch (e) {
         console.log(e);
