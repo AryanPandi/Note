@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import './Auth.css';
 import axios from 'axios';
+import {Toaster,toast} from 'react-hot-toast';
 
 const RegisterComponent = () => {
 
@@ -14,9 +15,6 @@ const RegisterComponent = () => {
         userEmail: '',
     });
 
-    const [message, setMessage] = useState();
-    const [error, setError] = useState(null);
-
     const HandleSubmit = (e) => {
         e.preventDefault();
         if (registerUser.userEmail && registerUser.userName && registerUser.userPassword) {
@@ -25,24 +23,24 @@ const RegisterComponent = () => {
                 password: registerUser.userPassword,
                 email: registerUser.userEmail
             };
-            axios.post('http://localhost:3001/register', newUser)
+            axios.post('http://localhost:3001/u/register', newUser)
                 .then(res => {
+                    console.log(res);
                     if (res.data.success) {
-                        setMessage(res.data.message);
+                        toast.success(res.data.message);
                         console.log(res.data.message);
                         navigate('/login');
-                        setError(null);
                     }
                     else {
-                        setError(res.data.error);
+                        toast.error(res.data.message);
                     }
-                }).catch(e => {
-                    setError(e.response.data.error);
-                    console.log(e.response ? e.response.data.error : e.message);
+                }).catch(er => {
+                    console.log(typeof er.response.data.message);
+                    toast.error(er.response.data.message);
                 });
         }
         else {
-            setError("Please fill all the fields");
+            toast.error("Please fill all the fields");
         }
     };
 
@@ -51,11 +49,6 @@ const RegisterComponent = () => {
         <div className='auth-container'>
             <form className='auth-form' onSubmit={e => HandleSubmit(e)} >
                 <h2>Register</h2>
-                {error ?
-                    <div className="error-message">{error}</div>
-                    :
-                    <div className="message">{message}</div>
-                }
                 <input type="text" placeholder="Username" value={registerUser.userName} onChange={(e) => setRegisterUser({ ...registerUser, userName: e.target.value })} required />
                 <input type="email" placeholder="Email" value={registerUser.userEmail} onChange={(e) => setRegisterUser({ ...registerUser, userEmail: e.target.value })} required />
                 <input type="password" placeholder="Password" value={registerUser.userPassword} onChange={(e) => setRegisterUser({ ...registerUser, userPassword: e.target.value })} />

@@ -17,7 +17,7 @@ const ForgetPasswordComponent = () => {
             return;
         }
         console.log(email);
-        axios.post('http://localhost:3001/forgetpassword',{email})
+        axios.post('http://localhost:3001/u/forgetpassword',{email})
         .then(res=>{
             console.log(res.data.message);
         })

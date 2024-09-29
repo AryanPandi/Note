@@ -88,7 +88,7 @@ const MainComponent = ({ currUser, setCurrUser }) => {
 
 
   const HandleDeleteNote = (e, notedId) => {
-    axios.delete(`http://localhost:3001/deleteNote/${notedId}`,{data:{currUser:currUser}})
+    axios.delete(`http://localhost:3001/deleteNote/n/${notedId}`,{data:{currUser:currUser}})
       .then(() => {
         setNotes(note => {
           return note.filter(n => {

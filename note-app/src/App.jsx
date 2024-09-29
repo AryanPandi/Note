@@ -6,6 +6,7 @@ import RegisterComponent from './Component/User/RegisterComponent';
 import ProtectedRoute from './Component/ProtectedRoute';
 import { useState } from 'react';
 import ForgetPasswordComponent from './Component/User/ForgetPasswordComponent';
+import toast, { Toaster } from "react-hot-toast";
 
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
   const [currUser,setCurrUser]=useState(null);
 
   return (
+    <>
+    <Toaster/>
     <Router>
       <Routes>
         <Route path="/" element={< RegisterComponent/>} />
@@ -21,6 +24,7 @@ function App() {
         <Route path="/main" element={<ProtectedRoute element={<MainComponent currUser={currUser} setCurrUser={setCurrUser} />}/>} />
       </Routes>
     </Router>
+    </>
   );
 }
 
