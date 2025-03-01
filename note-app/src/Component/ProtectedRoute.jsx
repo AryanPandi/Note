@@ -6,7 +6,7 @@ const ProtectedRoute = ({ element }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/check-auth',{ withCredentials: true })
+    axios.get('http://localhost:3001/u/check-auth',{ withCredentials: true })
       .then(res => {
 
         console.log(res.data.isAuthenticated);

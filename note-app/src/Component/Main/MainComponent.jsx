@@ -28,7 +28,7 @@ const MainComponent = ({ currUser, setCurrUser }) => {
 
   useEffect(() => {
     if (currUser) { 
-      axios.get('http://localhost:3001/getNote', { params: { currUser: currUser } }) 
+      axios.get('http://localhost:3001/n/getNote', { params: { currUser: currUser } }) 
         .then(res => {
           setNotes(res.data);
         })
@@ -39,7 +39,7 @@ const MainComponent = ({ currUser, setCurrUser }) => {
 
   const HandleAddNote=(e)=>{
     e.preventDefault();
-    axios.post('http://localhost:3001/addNote',{title:note.title,content:note.content,currUser:currUser})
+    axios.post('http://localhost:3001/n/addNote',{title:note.title,content:note.content,currUser:currUser})
     .then((res)=>{ 
       setNotes([...notes,res.data])
       setNote({ title: "", content: "" });
@@ -49,7 +49,7 @@ const MainComponent = ({ currUser, setCurrUser }) => {
 
   const HandleUpdateNote = (e, noteId) => {
     e.preventDefault();
-    axios.put(`http://localhost:3001/updateNote/${noteId}`, {selectNote:selectNote,currUser:currUser})
+    axios.put(`http://localhost:3001/n/updateNote/${noteId}`, {selectNote:selectNote,currUser:currUser})
       .then(() => {
         const newNotes = notes.map((n) => {
           if (n._id === noteId) {
@@ -88,7 +88,7 @@ const MainComponent = ({ currUser, setCurrUser }) => {
 
 
   const HandleDeleteNote = (e, notedId) => {
-    axios.delete(`http://localhost:3001/deleteNote/n/${notedId}`,{data:{currUser:currUser}})
+    axios.delete(`http://localhost:3001/n/deleteNote/${notedId}`,{data:{currUser:currUser}})
       .then(() => {
         setNotes(note => {
           return note.filter(n => {

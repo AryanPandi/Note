@@ -48,7 +48,7 @@ const LoginComponent = ({ setCurrUser }) => {
                     }
                 })
                 .catch(er => {
-                    console.log(er.response.data.message);
+                    // console.log(er.response.data.message);
                     toast.error(er.response.data.message);
                 })
         }

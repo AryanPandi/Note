@@ -4,6 +4,8 @@ const NoteUser = require('../model/noteUser');
 const nodemailer = require('nodemailer');
 const userService = require("../service/userService");
 
+
+
 exports.register=async(req,res)=>{
   const {username,email,password}=req.body;
   try{
@@ -58,6 +60,7 @@ exports.register=async(req,res)=>{
   }
 }
 
+
 exports.login = async(req,res)=>{
   const { email, password } = req.body;
   const user = await NoteUser.findOne({ email });
@@ -86,9 +89,6 @@ exports.login = async(req,res)=>{
     else {
       res.status(400).json({ message: 'Email or Password is wrong.', success: false });
     }
-
-
-
   } catch (e) {
     console.log(e);
     res.status(500).json({ message: 'An error occurred during login', success: false });
@@ -123,8 +123,6 @@ exports.forgetpassword= async(req,res)=>{
         rejectUnauthorized: false,
       },
     });
-
-
     // Mail options for password reset
     const mailOptions = {
       from: process.env.APP_EMAIL,
@@ -132,7 +130,6 @@ exports.forgetpassword= async(req,res)=>{
       subject: 'Password Reset for Notes App',
       text: `Please use the following link to reset your password: ${link}`,
     };
-
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -148,7 +145,6 @@ exports.forgetpassword= async(req,res)=>{
   }
 }
 
-
 // Controller for handling password reset
 exports.resetpassword = async (req, res) => {
   const { id, token } = req.params;
@@ -160,30 +156,20 @@ exports.resetpassword = async (req, res) => {
     if (!oldUser) {
       return res.status(400).json({ error: `User doesn't exist.`, success: false });
     }
-
-
     const secret = process.env.JWT_SEC + oldUser.password;
     const verify = jwt.verify(token, secret);
-
-
     const salt = await bcrypt.genSalt(10);
     const encryptedPassword = await bcrypt.hash(password, salt);
-
-
     await NoteUser.findByIdAndUpdate(
       { _id: id },
       { $set: { password: encryptedPassword } }
     );
-
-
     res.render("index", { email: verify.email, status: "verified" });
   } catch (error) {
     console.log(error);
     return res.status(401).json({ error: 'Token is invalid or has expired.' });
   }
 };
-
-
 // Controller for checking authentication status
 exports.checkAuth = (req, res) => {
   try{
@@ -191,8 +177,6 @@ exports.checkAuth = (req, res) => {
   if (!token) {
     return res.json({ isAuthenticated: false });
   }
-
-
   jwt.verify(token, process.env.JWT_SEC, (err) => {
     if (err) {
       return res.json({ isAuthenticated: false });

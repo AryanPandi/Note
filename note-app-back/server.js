@@ -17,7 +17,7 @@ const agent = new https.Agent({
   rejectUnauthorized: false,
 });
 const app = express();
-app.use(cors({origin:'http://localhost:3000',credentials: true}));
+app.use(cors({origin:['http://localhost:3000','http://localhost:3002'],credentials: true}));
 app.use(express.json());
 app.use(cookieParser());
 app.set('view engine', 'ejs');
@@ -33,5 +33,3 @@ app.use('/u', userRoutes);
 app.listen(PORT,()=>{
     console.log(`Running on PORT: ${PORT}`);
 })
-
-

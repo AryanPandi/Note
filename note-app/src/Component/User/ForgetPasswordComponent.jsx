@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Auth.css';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+
 
 const ForgetPasswordComponent = () => {
     const [email, setEmail] = useState('');
@@ -19,15 +21,16 @@ const ForgetPasswordComponent = () => {
         console.log(email);
         axios.post('http://localhost:3001/u/forgetpassword',{email})
         .then(res=>{
+            // toast.success(res.data.message);
             console.log(res.data.message);
         })
-        .catch(e=>{
-            console.log(e);
+        .catch(er=>{
+            toast.error(er.response.data.message);
+            console.log(er);
         })
 
         // Example logic to handle request
-        setError('');
-        setMessage('If the email is registered, a password reset link will be sent.');
+        toast.success('If the email is registered, a password reset link will be sent.');
     };
 
     return (
