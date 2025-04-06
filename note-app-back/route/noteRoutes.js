@@ -1,11 +1,12 @@
 const express = require('express');
 const noteRouters = express.Router();
-const {getNotes,addNote,updateNote,deleteNote} = require('../controllers/noteController'); // Adjust path as needed
+const checkAuth = require('../middleware/userMiddleware'); // The admin check middleware
+const { getNotes, addNote, updateNote, deleteNote } = require('../controllers/noteController'); // Adjust path as needed
 
 // Note routes mapped to controller methods
-noteRouters.get('/getNote', getNotes);
-noteRouters.post('/addNote', addNote);
-noteRouters.put('/updateNote/:id', updateNote);
-noteRouters.delete('/deleteNote/:id', deleteNote);
+noteRouters.get('/getNote', checkAuth, getNotes);
+noteRouters.post('/addNote', checkAuth, addNote);
+noteRouters.put('/updateNote/:id', checkAuth, updateNote);
+noteRouters.delete('/deleteNote/:id', checkAuth, deleteNote);
 
 module.exports = noteRouters;

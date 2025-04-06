@@ -17,6 +17,7 @@ exports.genJWTToken = (payload, type = null) => {
     throw new Error("Error generating JWT token");
   }
 }
+
 exports.verifyJWTToken = (token) => {
   try {
     const payload = jwt.verify(token, JWT_SEC);
@@ -25,12 +26,12 @@ exports.verifyJWTToken = (token) => {
     throw error;
   }
 }
+
 exports.generateHashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
   return hash;
 }
-
 
 exports.compareHashPassword = async (password, userPassword) => {
   const isMatch = await bcrypt.compare(password, userPassword);
