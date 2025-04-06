@@ -4,23 +4,23 @@ const NoteUser = require('../model/noteUser');
 const nodemailer = require('nodemailer');
 const userService = require("../service/userService");
 
-exports.register=async(req,res)=>{
-  const {username,email,password}=req.body;
-  try{
+exports.register = async (req, res) => {
+  const { username, email, password } = req.body;
+  try {
     const user = await NoteUser.findOne({ email });
-  if (user) {
-    return res.status(500).json({ message: 'User already present.', success: false });
-  }
+    if (user) {
+      return res.status(500).json({ message: 'User already present.', success: false });
+    }
 
 
-    const salt= await bcrypt.genSalt(10);
-    const hashedPassword= await bcrypt.hash(password,salt);
-    const newUser= new NoteUser({
-      username:username,
-      password:hashedPassword,
-      email:email,
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const newUser = new NoteUser({
+      username: username,
+      password: hashedPassword,
+      email: email,
     });
-    const savedUser= await newUser.save();
+    const savedUser = await newUser.save();
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
@@ -34,15 +34,15 @@ exports.register=async(req,res)=>{
         rejectUnauthorized: false, // This allows self-signed certificates
       },
     });
-    
-     var mailOptions = {
+
+    var mailOptions = {
       from: process.env.APP_EMAIL,
       to: email,
       subject: 'Sending Email using Node.js for registeration in Notesapp.',
       text: 'Thank you for your registration in the Notes App.'
-     };
-    
-     transporter.sendMail(mailOptions, function (error, info) {
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);
         return res.status(500).json({ message: "Failed to send email" }); // Send error response and return early
@@ -51,14 +51,14 @@ exports.register=async(req,res)=>{
         return res.status(200).json({ message: "Email sent successfully" }); // Send success response
       }
     });
-    res.status(200).json({ message: 'Successfully Registered',success:true });
+    res.status(200).json({ message: 'Successfully Registered', success: true });
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: 'An error occurred during registration',success:false });
+    res.status(500).json({ message: 'An error occurred during registration', success: false });
   }
 }
 
-exports.login = async(req,res)=>{
+exports.login = async (req, res) => {
   const { email, password } = req.body;
   const user = await NoteUser.findOne({ email });
   if (!user) {
@@ -95,7 +95,7 @@ exports.login = async(req,res)=>{
   }
 }
 
-exports.forgetpassword= async(req,res)=>{
+exports.forgetpassword = async (req, res) => {
   const { email } = req.body;
   try {
     const user = await NoteUser.findOne({ email });
@@ -180,28 +180,5 @@ exports.resetpassword = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(401).json({ error: 'Token is invalid or has expired.' });
-  }
-};
-
-
-// Controller for checking authentication status
-exports.checkAuth = (req, res) => {
-  try{
-    const token = req.cookies.token;
-  if (!token) {
-    return res.json({ isAuthenticated: false });
-  }
-
-
-  jwt.verify(token, process.env.JWT_SEC, (err) => {
-    if (err) {
-      return res.json({ isAuthenticated: false });
-    }
-    res.json({ isAuthenticated: true });
-  });
-  }
-  catch(e){
-    console.log(e);
-    return res.status(401).json({ error: "Error: "+e });
   }
 };
